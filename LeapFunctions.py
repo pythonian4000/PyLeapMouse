@@ -4,6 +4,7 @@
 import Leap
 import Geometry
 import math
+import os
 
 class debouncer(object): #Takes a "signal" and debounces it.
     def __init__(self, debounce_time): #Takes as an argument the number of opposite samples it needs to debounce.
@@ -59,6 +60,8 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
             hand = frame.hands[0] #The first hand
             if has_two_pointer_fingers(hand): #Scroll mode
                 self.do_scroll_stuff(hand)
+            if has_four_pointer_fingers(hand): #Scroll mode
+                self.do_mission_stuff(hand)
             else: #Mouse mode
                 self.do_mouse_stuff(hand)
 
@@ -67,10 +70,19 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
         if not fingers.empty: #Make sure we have some fingers to work with
             sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
             finger_velocity = sorted_fingers[0].tip_velocity #Get the velocity of the forwardmost finger
-            x_scroll = self.velocity_to_scroll_amount(finger_velocity.x)
-            y_scroll = self.velocity_to_scroll_amount(finger_velocity.y)
+            x_scroll = self.velocity_to_scroll_amount(finger_velocity.x) * 5 #I considered the scrolling a bit too slow, multiplied it with 5
+            y_scroll = self.velocity_to_scroll_amount(finger_velocity.y) * 5
             self.cursor.scroll(x_scroll, y_scroll)
-
+            
+    def do_mission_stuff(self, hand): #Take a hand and use it as a CRAZY MISSION CONTROL LAUNCHER
+        fingers = hand.fingers #The list of fingers on said hand
+        if not fingers.empty: #Make sure we have some fingers to work with
+            sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
+            finger_velocity = sorted_fingers[0].tip_velocity #Get the velocity of the forwardmost finger
+            if self.velocity_to_scroll_amount(finger_velocity.y) > 100 or self.velocity_to_scroll_amount(finger_velocity.y) < -100: # Once the finger reaches a certain velocity (or negative velocity for downward movement...
+                cmd = """osascript -e 'tell app "Mission Control" to launch'""" #Use AppleScript to trigger Mission Control
+                os.system(cmd)
+            
     def velocity_to_scroll_amount(self, velocity): #Converts a finger velocity to a scroll velocity
         #The following algorithm was designed to reflect what I think is a comfortable
         #Scrolling behavior.
@@ -138,7 +150,7 @@ def has_thumb(hand): #The level of accuracy with this function is surprisingly h
         return False
 
 def has_two_pointer_fingers(hand): #Checks if we are using two pointer fingers
-    if len(hand.fingers) < 2: #Obviously not
+    if len(hand.fingers) < 2 or len(hand.fingers) > 3: #Obviously not
         return False
     sorted_fingers = sort_fingers_by_distance_from_screen(hand.fingers)
     finger1_pos = Geometry.to_vector(sorted_fingers[0].tip_position)
@@ -147,7 +159,13 @@ def has_two_pointer_fingers(hand): #Checks if we are using two pointer fingers
     if difference.norm() < 40: #Check if the fingertips are close together
         return True
     else:
+        return False    
+    
+def has_four_pointer_fingers(hand): #Dennis: Checking for 4 fingers, so we can launch Mission Control
+    if len(hand.fingers) < 4: #Obviously not
         return False
+    else:
+        return True
 
 #Check if the vectors of length 'vector_length' shooting out of a pair of fingers intersect within tolerance 'tolerance'
 def finger_vectors_intersect(finger1, finger2, vector_length, tolerance):
