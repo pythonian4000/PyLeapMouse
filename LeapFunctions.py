@@ -61,7 +61,7 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
             if has_two_pointer_fingers(hand): #Scroll mode
                 self.do_scroll_stuff(hand)
             if has_four_pointer_fingers(hand): #Scroll mode
-                self.do_mission_stuff(hand)
+                self.do_four_finger_gesture_stuff(hand)
             else: #Mouse mode
                 self.do_mouse_stuff(hand)
 
@@ -74,7 +74,7 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
             y_scroll = self.velocity_to_scroll_amount(finger_velocity.y)
             self.cursor.scroll(x_scroll, y_scroll)
             
-    def do_mission_stuff(self, hand): #Take a hand and use it as a CRAZY MISSION CONTROL LAUNCHER
+    def do_four_finger_gesture_stuff(self, hand): #Take a hand and use it as a CRAZY MISSION CONTROL LAUNCHER
         fingers = hand.fingers #The list of fingers on said hand
         if not fingers.empty: #Make sure we have some fingers to work with
             sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
@@ -82,6 +82,11 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
             if self.velocity_to_scroll_amount(finger_velocity.y) > 100 or self.velocity_to_scroll_amount(finger_velocity.y) < -100: # Once the finger reaches a certain velocity (or negative velocity for downward movement...
                 cmd = """osascript -e 'tell app "Mission Control" to launch'""" #Use AppleScript to trigger Mission Control
                 os.system(cmd)
+            if self.velocity_to_scroll_amount(finger_velocity.x) > 300: #Moving hand to the right
+                os.system("osascript -e 'tell application \"System Events\" to key code 123 using control down'")
+            if self.velocity_to_scroll_amount(finger_velocity.x) < -300: #Moving hand to the right
+                os.system("osascript -e 'tell application \"System Events\" to key code 124 using control down'")
+
             
     def velocity_to_scroll_amount(self, velocity): #Converts a finger velocity to a scroll velocity
         #The following algorithm was designed to reflect what I think is a comfortable
