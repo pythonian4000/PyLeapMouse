@@ -70,8 +70,8 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
         if not fingers.empty: #Make sure we have some fingers to work with
             sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
             finger_velocity = sorted_fingers[0].tip_velocity #Get the velocity of the forwardmost finger
-            x_scroll = self.velocity_to_scroll_amount(finger_velocity.x) * 5 #I considered the scrolling a bit too slow, multiplied it with 5
-            y_scroll = self.velocity_to_scroll_amount(finger_velocity.y) * 5
+            x_scroll = self.velocity_to_scroll_amount(finger_velocity.x)
+            y_scroll = self.velocity_to_scroll_amount(finger_velocity.y)
             self.cursor.scroll(x_scroll, y_scroll)
             
     def do_mission_stuff(self, hand): #Take a hand and use it as a CRAZY MISSION CONTROL LAUNCHER
@@ -91,6 +91,7 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
         vel = vel / 150
         vel = vel ** 3 #Cube vel
         vel = vel / 8
+        vel = vel * 5 #I added this because I felt scrolling should be faster. Feel free to edit this to make it feel better for you.
         vel = vel * -1 #Negate direction, depending on how you like to scroll
         return vel
 
