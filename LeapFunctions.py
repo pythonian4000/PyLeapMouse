@@ -79,11 +79,11 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
         if not fingers.empty: #Make sure we have some fingers to work with
             sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
             finger_velocity = sorted_fingers[0].tip_velocity #Get the velocity of the forwardmost finger
-            if self.velocity_to_scroll_amount(finger_velocity.y) > 100 or self.velocity_to_scroll_amount(finger_velocity.y) < -100: # Once the finger reaches a certain velocity (or negative velocity for downward movement...
+            if self.velocity_to_scroll_amount(finger_velocity.y) > 200 or self.velocity_to_scroll_amount(finger_velocity.y) < -100: # Once the finger reaches a certain velocity (or negative velocity for downward movement...
                 os.system("""osascript -e 'tell app "Mission Control" to launch'""") #Use AppleScript to trigger Mission Control
-            if self.velocity_to_scroll_amount(finger_velocity.x) > 400: #Moving hand to the right
+            if self.velocity_to_scroll_amount(finger_velocity.x) > 300: #Moving hand to the right
                 os.system("osascript -e 'tell application \"System Events\" to key code 124 using control down'") #Use AppleScript to press Ctrl+Right
-            if self.velocity_to_scroll_amount(finger_velocity.x) < -400: #Moving hand to the right
+            if self.velocity_to_scroll_amount(finger_velocity.x) < -300: #Moving hand to the right
                 os.system("osascript -e 'tell application \"System Events\" to key code 123 using control down'") #Use AppleScript to press Ctrl+Left
 
             
