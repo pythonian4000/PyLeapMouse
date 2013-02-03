@@ -109,21 +109,23 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
                 y_coord = (1.0 - intersection.y) * self.screen_resolution[1] #y pixel of intersection
                 #print x_coord, y_coord #For debugging
                 self.cursor.move(x_coord,y_coord) #Move the cursor
-                if has_thumb(hand): #We've found a thumb!
-                    #print "thumb detected"
-                    #print '+'
-                    self.mouse_button_debouncer.signal(True) #We have detected a possible click. The debouncer ensures that we don't have click jitter
-                else:
-                    #print '-'
-                    self.mouse_button_debouncer.signal(False) #Same idea as above (but opposite)
+                if len(hand.fingers) == 2:
+                    sorted_fingers = sort_fingers_left_to_right(hand.fingers)
+                    finger1_pos = Geometry.to_vector(sorted_fingers[0].tip_position)
+                    finger2_pos = Geometry.to_vector(sorted_fingers[1].tip_position)
+                    difference = finger1_pos - finger2_pos
+                    if difference.norm() > 40 and left_finger_still(sorted_fingers[0].tip_velocity.y) and right_finger_moving(sorted_fingers[1].tip_velocity.y): #Check if the fingertips are close together
+                        self.mouse_button_debouncer.signal(True) #We have detected a possible click. The debouncer ensures that we don't have click jitter
+                    else:
+                        self.mouse_button_debouncer.signal(False) #Same idea as above (but opposite)
 
-                if self.cursor.left_button_pressed != self.mouse_button_debouncer.state: #We need to push/unpush the cursor's button
-                    #print "clicked:"
-                    #print self.mouse_button_debouncer.state
-                    self.cursor.set_left_button_pressed(self.mouse_button_debouncer.state) #Set the cursor to click/not click
+                    if self.cursor.left_button_pressed != self.mouse_button_debouncer.state: #We need to push/unpush the cursor's button
+                        #print "clicked:"
+                        #print self.mouse_button_debouncer.state
+                        self.cursor.set_left_button_pressed(self.mouse_button_debouncer.state) #Set the cursor to click/not click
 
     def select_pointer_finger(self, possible_fingers): #Choose the best pointer finger
-        sorted_fingers = sort_fingers_by_distance_from_screen(possible_fingers) #Prioritize fingers by distance from screen
+        sorted_fingers = sort_fingers_left_to_right(possible_fingers) #Prioritize fingers by distance from screen
         if self.most_recent_pointer_finger_id != None: #If we have a previous pointer finger in memory
              for finger in sorted_fingers: #Look at all the fingers
                 if finger.id == self.most_recent_pointer_finger_id: #The previously used pointer finger is still in frame
@@ -137,6 +139,19 @@ def sort_fingers_by_distance_from_screen(fingers):
     new_finger_list = [finger for finger in fingers] #Copy the list of fingers
     new_finger_list.sort(key=lambda x: x.tip_position.z) #Sort by increasing z
     return new_finger_list #Lower indices = closer to screen
+    
+def sort_fingers_left_to_right(fingers):
+    new_finger_list = [finger for finger in fingers] #Copy the list of fingers
+    new_finger_list.sort(key=lambda x: x.tip_position.x) #Sort by increasing z
+    return new_finger_list #Lower indices = closer to screen
+    
+def left_finger_still(movement):
+    if movement < 100 and movement > -100:
+        return True
+
+def right_finger_moving(movement):
+    if movement > 100 or movement < -100:
+        return True
 
 def has_thumb(hand): #The level of accuracy with this function is surprisingly high
     if hand.fingers.empty: #We assume no thumbs
@@ -155,7 +170,7 @@ def has_thumb(hand): #The level of accuracy with this function is surprisingly h
         return False
 
 def has_two_pointer_fingers(hand): #Checks if we are using two pointer fingers
-    if len(hand.fingers) < 2 or len(hand.fingers) > 3: #Obviously not
+    if len(hand.fingers) != 2: #Obviously not
         return False
     sorted_fingers = sort_fingers_by_distance_from_screen(hand.fingers)
     finger1_pos = Geometry.to_vector(sorted_fingers[0].tip_position)
