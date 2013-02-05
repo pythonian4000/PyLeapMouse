@@ -1,4 +1,5 @@
 #William Yager
+#Adaptations by Dennis Janssen
 #Leap Python mouse controller POC
 
 import Leap
@@ -74,7 +75,7 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
             y_scroll = self.velocity_to_scroll_amount(finger_velocity.y)
             self.cursor.scroll(x_scroll, y_scroll)
             
-    def do_four_finger_gesture_stuff(self, hand): #Take a hand and use it as a CRAZY MISSION CONTROL LAUNCHER
+    def do_four_finger_gesture_stuff(self, hand): #Four fingers can be used to launch Mission Control and switch spaces
         fingers = hand.fingers #The list of fingers on said hand
         if not fingers.empty: #Make sure we have some fingers to work with
             sorted_fingers = sort_fingers_by_distance_from_screen(fingers) #Prioritize fingers by distance from screen
@@ -95,7 +96,7 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
         vel = vel / 150
         vel = vel ** 3 #Cube vel
         vel = vel / 8
-        vel = vel * 5 #I added this because I felt scrolling should be faster. Feel free to edit this to make it feel better for you.
+        vel = vel * 5 #I (Dennis) added this because I felt scrolling should be faster. Feel free to edit this to make it feel better for you.
         vel = vel * -1 #Negate direction, depending on how you like to scroll
         return vel
 
@@ -109,12 +110,12 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
                 y_coord = (1.0 - intersection.y) * self.screen_resolution[1] #y pixel of intersection
                 #print x_coord, y_coord #For debugging
                 self.cursor.move(x_coord,y_coord) #Move the cursor
-                if len(hand.fingers) == 2:
-                    sorted_fingers = sort_fingers_left_to_right(hand.fingers)
+                if len(hand.fingers) == 2: #I changed clicking, so it can happen with two fingers
+                    sorted_fingers = sort_fingers_left_to_right(hand.fingers) #Sorting fingers from left to right, so I can use my index finger for pointing. Sorry lefties!
                     finger1_pos = Geometry.to_vector(sorted_fingers[0].tip_position)
                     finger2_pos = Geometry.to_vector(sorted_fingers[1].tip_position)
                     difference = finger1_pos - finger2_pos
-                    if difference.norm() > 40 and left_finger_still(sorted_fingers[0].tip_velocity.y) and right_finger_moving(sorted_fingers[1].tip_velocity.y): #Check if the fingertips are close together
+                    if difference.norm() > 40 and left_finger_still(sorted_fingers[0].tip_velocity.y) and right_finger_moving(sorted_fingers[1].tip_velocity.y): #Check if the fingertips are a bit apart, the right finger is clicking down but the left finger is keeping still. This line prevents clicking while scrolling (or it should...)
                         self.mouse_button_debouncer.signal(True) #We have detected a possible click. The debouncer ensures that we don't have click jitter
                     else:
                         self.mouse_button_debouncer.signal(False) #Same idea as above (but opposite)
@@ -145,11 +146,11 @@ def sort_fingers_left_to_right(fingers):
     new_finger_list.sort(key=lambda x: x.tip_position.x) #Sort by increasing z
     return new_finger_list #Lower indices = closer to screen
     
-def left_finger_still(movement):
+def left_finger_still(movement): #Check if the left finger is still (so not trying to scroll)
     if movement < 100 and movement > -100:
         return True
 
-def right_finger_moving(movement):
+def right_finger_moving(movement): #Check if the right finger is moving (so trying to click or scrolling...)
     if movement > 100 or movement < -100:
         return True
 
