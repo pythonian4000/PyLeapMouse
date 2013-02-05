@@ -126,13 +126,14 @@ class Listener(Leap.Listener): #The Listener that we attach to the controller
                         self.cursor.set_left_button_pressed(self.mouse_button_debouncer.state) #Set the cursor to click/not click
 
     def select_pointer_finger(self, possible_fingers): #Choose the best pointer finger
-        sorted_fingers = sort_fingers_left_to_right(possible_fingers) #Prioritize fingers by distance from screen
-        if self.most_recent_pointer_finger_id != None: #If we have a previous pointer finger in memory
+        sorted_fingers = sort_fingers_left_to_right(possible_fingers) #Prioritize fingers from left to right, sorry Lefties!
+        if self.most_recent_pointer_finger_id != None and self.number_of_fingers != None: #If we have a previous pointer finger in memory
              for finger in sorted_fingers: #Look at all the fingers
-                if finger.id == self.most_recent_pointer_finger_id: #The previously used pointer finger is still in frame
+                if finger.id == self.most_recent_pointer_finger_id and self.number_of_fingers == len(sorted_fingers): #The previously used pointer finger is still in frame
                     return finger #Keep using it
         #If we got this far, it means we don't have any previous pointer fingers OR we didn't find the most recently used pointer finger in the frame
         self.most_recent_pointer_finger_id = sorted_fingers[0].id #This is the new pointer finger
+        self.number_of_fingers = len(sorted_fingers)
         return sorted_fingers[0]
                     
 
