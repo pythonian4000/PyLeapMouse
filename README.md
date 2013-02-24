@@ -1,21 +1,16 @@
 README:
 
-This is my Proof-of-concept code for a Leap Motion-based mouse controller. It only works on OS X as-is, but if you wanted to rewrite Mouse.py for your OS, it should work fine. This was designed for API 0.7.1.
+Hi, this respository was forked from the PyLeapMouse by wyager, he offered a great starting point, so: thanks! I added some basic Mac functionality, like Mission Control and switching spaces. I'll try to explain in detail, feel free to contact me if some parts need more in-depth explanation.
 
 USAGE:
-Operation is as follows:
-1)Insert your hand into frame.
-2)The forwardmost finger that the program detects is the mouse finger. Where it points, the cursor goes.
-3)Stick your thumb out (see note) to click down, and fold your thumb in to click up.
-4)Using two pointer fingers (e.g. index and middle) goes into scroll mode, which is not very intuitive but shows how it might work. The fingertips must be within a short distance of each other to activate scroll mode.
+1. Moving a hand with 1 or 2 fingers in the field of sight of the Leap should make your mouse pointer move. The left finger is always the pointing finger, since I'm right-handed. (Southpaws, feel free to edit this!)
+2. Moving your 2 fingers (I myself use my index and middle finger) closer together 'grabs' the page and you can then move it up and down for scrolling. Moving them further apart again 'releases' the page.
+3. Moving the most right finger in a quick flick downwards performs a 'click'. This is a bit tricky, since it feels like a right-mouse-click actually… Hope this makes sense.
+4. Moving 4 fingers into the frame activates gestures-mode, with up and down movement activates and deactivates Mission Control, left and right are used to switch spaces. Note: move your hand faster in the direction you want to go and go back slower. Moving back and forth equally fast will make you switch back and forth between two spaces as well. (Sounds obvious, yet I struggle with this myself…)
 
-(note) The Leap software at the moment (v0.7.1) is a little iffy about detecting thumbs, and it helps to keep your arm straight out in front of you. It takes a little practice to figure out how to hold your thumb correctly. You may want to un-comment some debug prints to help you figure out when Leap thinks you have your thumb out. Apparently 0.7.3 has better thumb detection, but it is not available at the time of writing.
 
 CONFIGURATION:
-1)Configure your Leap screen from the Leap menu.
-2)Copy all prerequisite files into the same directory as PyLeapMouse.py, Mouse.py, LeapFunctions.py, and Geometry.py. This includes Leap.py as well as the proper native library stuff (_LeapPython.so and libLeap.dylib on OS X).
-3)Launch the Leap app (if not launched already) and plug in your Leap
-4)cd to the directory all this stuff is in and run `python PyLeapMouse.py` (minus quotes)
+1. Copy the entire folder to your local Mac. I myself like using the GitHub Mac App, since it always gives me a good view of the changes I made and also makes it easy to manage local and online repositories. Some developers here will probably shoot me for this confession... Oh well...
+2. Open Terminal and open the folder you copied the code to. The easiest way to do so is type "cd" and then drag the folder to your Terminal window. In my case the command is: "cd /Users/dennis/PyLeapMouse ".
+3. Run the Python file PyLeapMouse.py. The following command will do: "python PyLeapMouse.py". The app should start giving you some feedback on the startup and notify you it's up and running eventually.
 
-NOTES:
-I hacked this together in a few hours, so it's probably buggy and I doubt the design is anything to write home about. However, I tried to keep the code clean and readable. Let me know if you find any bugs. You can reach me at  will (dot) yager (at) gmail (dot) (what the gmail domain ends in). 
