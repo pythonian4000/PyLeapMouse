@@ -2,6 +2,8 @@ README:
 
 Hi, this respository was forked from the PyLeapMouse by wyager, he offered a great starting point, so: thanks! I added some basic Mac functionality, like Mission Control and switching spaces. I'll try to explain in detail, feel free to contact me if some parts need more in-depth explanation.
 
+NOTE: Quickly tested this out for SDK 0.7.4, everything seems to work, although the connection with osascript seems even slower now...
+
 USAGE:
 1. Moving a hand with 1 or 2 fingers in the field of sight of the Leap should make your mouse pointer move. The left finger is always the pointing finger, since I'm right-handed. (Southpaws, feel free to edit this!)
 2. Moving your 2 fingers (I myself use my index and middle finger) closer together 'grabs' the page and you can then move it up and down for scrolling. Moving them further apart again 'releases' the page.
