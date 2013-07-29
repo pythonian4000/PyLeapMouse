@@ -4,7 +4,8 @@
 
 
 import math
-from leap import Leap, Mouse
+from leap import Leap
+import Mouse
 import Geometry
 from MiscFunctions import *
 

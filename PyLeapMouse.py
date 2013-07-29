@@ -1,7 +1,8 @@
 #William Yager
 #Leap Python mouse controller POC
 import sys
-from leap import Leap, Mouse
+from leap import Leap
+import Mouse
 from PalmControl import Palm_Control_Listener  #For palm-tilt based control
 from FingerControl import Finger_Control_Listener  #For finger-pointing control
 
