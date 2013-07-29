@@ -1,48 +1,13 @@
 from pymouse import PyMouse
 mouse = PyMouse()
 
-def AbsoluteMouseMove(posx,posy):
-    print 'move to', posx, posy
-    mouse.move(int(posx), int(posy))
-
-def AbsoluteMouseClick(posx,posy):
-    print 'click on ', posx, posy
-    mouse.click(posx, posy)
-
-def AbsoluteMouseClickDown(posx, posy):
-    print 'left button down'
-    mouse.press(posx, posy)
-
-def AbsoluteMouseClickUp(posx, posy):
-    print 'left button up'
-    mouse.release(posx, posy)
-
-def AbsoluteMouseDrag(posx, posy):  #Only relevant in OS X(?)
-    mouse.move(posx, posy)
-
-def AbsoluteMouseRightClick(posx,posy):
-    mouse.click(posx, posy, button=2)
-
-def AbsoluteMouseScroll(posx, posy, up=True):  #PyUserInput doesn't appear to support relative scrolling
-    if up is True:
-        mouse.click(posx, posy, button=4)
-    elif up is False:
-        mouse.click(posx, posy, button=5)
-    #When PyUserInput > 0.1.5 is released, the following will work:
-    #mouse.scroll(posx, posy, up)
-
-def GetDisplayWidth():
-    return mouse.screen_size()[0]
-
-def GetDisplayHeight():
-    return mouse.screen_size()[1]
-
 
 #A cursor that does commands based on absolute position (good for finger pointing)
 class absolute_cursor(object):
     def __init__(self):
-        self.x_max = GetDisplayWidth() - 1
-        self.y_max = GetDisplayHeight() - 1
+        screen_size = mouse.screen_size()
+        self.x_max = screen_size[0] - 1
+        self.y_max = screen_size[1] - 1
         self.left_button_pressed = False
         self.x = 0
         self.y = 0
@@ -59,16 +24,18 @@ class absolute_cursor(object):
         if self.y < 0.0:
             self.y = 0.0
         if self.left_button_pressed:  #We are dragging
-            AbsoluteMouseDrag(self.x, self.y)
+            # Once our old code is merged into PyUserInput,
+            # swap this for the official drag API method.
+            mouse.move(self.x, self.y)
         else:  #We are not dragging
-            AbsoluteMouseMove(self.x, self.y)
+            mouse.move(self.x, self.y)
 
     def click(self, posx=None, posy=None):  #Click at coordinates (current coordinates by default)
         if posx == None:
             posx = self.x
         if posy == None:
             posy = self.y
-        AbsoluteMouseClick(posx, posy)
+        mouse.click(posx, posy)
 
     def set_left_button_pressed(self, boolean_button):  #Set the state of the left button
         if boolean_button == True:  #Pressed
@@ -81,7 +48,7 @@ class absolute_cursor(object):
             posx = self.x
         if posy == None:
             posy = self.y
-        AbsoluteMouseClickDown(posx, posy)
+        mouse.press(posx, posy)
         self.left_button_pressed = True
 
     def click_up(self, posx=None, posy=None):
@@ -89,7 +56,7 @@ class absolute_cursor(object):
             posx = self.x
         if posy == None:
             posy = self.y
-        AbsoluteMouseClickUp(posx, posy)
+        mouse.release(posx, posy)
         self.left_button_pressed = False
 
     def rightClick(self, posx=None, posy=None):
@@ -97,7 +64,7 @@ class absolute_cursor(object):
             posx = self.x
         if posy == None:
             posy = self.y
-        AbsoluteMouseRightClick(posx, posy)
+        mouse.click(posx, posy, button=2)
 
     def scroll(self, x_movement, y_movement):
         posx = self.x
@@ -105,7 +72,15 @@ class absolute_cursor(object):
         up = False
         if y_movement < 0:
             up = True
-        AbsoluteMouseScroll(posx, posy, up)
+        # Once our old code is merged into PyUserInput,
+        # swap this for the official scroll API method.
+        # In the meantime, when PyUserInput > 0.1.5 is
+        # released, the following will work for Linux:
+        #mouse.scroll(posx, posy, up)
+        if up is True:
+            mouse.click(posx, posy, button=4)
+        elif up is False:
+            mouse.click(posx, posy, button=5)
 
 
 #Allows for relative movement instead of absolute movement. This implementation is not a "true" relative mouse,
@@ -129,6 +104,8 @@ class relative_cursor(absolute_cursor):
         if self.y < 0.0:
             self.y = 0.0
         if self.left_button_pressed:  #We are dragging
-            AbsoluteMouseDrag(self.x, self.y)
+            # Once our old code is merged into PyUserInput,
+            # swap this for the official drag API method.
+            mouse.move(self.x, self.y)
         else:  #We are not dragging
-            AbsoluteMouseMove(self.x, self.y)
+            mouse.move(self.x, self.y)
