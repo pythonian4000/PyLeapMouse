@@ -2,6 +2,7 @@
 #Leap Python mouse controller POC
 import sys
 from leap import Leap, Mouse
+from HandControl import Hand_Control_Listener  #For hand-position based control
 from PalmControl import Palm_Control_Listener  #For palm-tilt based control
 from FingerControl import Finger_Control_Listener  #For finger-pointing control
 
@@ -22,14 +23,16 @@ def main():
     print "Use -h or --help for more info.\n"
 
     #Default
-    finger_mode = True
+    mode = 0
     smooth_aggressiveness = 8
     smooth_falloff = 1.3
 
     for i in range(0,len(sys.argv)):
         arg = sys.argv[i].lower()
         if "--palm" in arg:
-            finger_mode = False
+            mode = 1
+        elif "--hand" in arg:
+            mode = 2
         if "--smooth-falloff" in arg:
             smooth_falloff = float(sys.argv[i+1])
         if "--smooth-aggressiveness" in arg:
@@ -38,12 +41,15 @@ def main():
     listener = None;  #I'm tired and can't think of a way to organize this segment nicely
 
     #Create a custom listener object which controls the mouse
-    if finger_mode:  #Finger pointer mode
+    if mode == 0:  #Finger pointer mode
         listener = Finger_Control_Listener(Mouse, smooth_aggressiveness=smooth_aggressiveness, smooth_falloff=smooth_falloff)
         print "Using finger mode..."
-    else:  #Palm control mode
+    elif mode == 1:  #Palm control mode
         listener = Palm_Control_Listener(Mouse)
         print "Using palm mode..."
+    else:  #Hand position mode
+        listener = Hand_Control_Listener(Mouse, smooth_aggressiveness=smooth_aggressiveness, smooth_falloff=smooth_falloff)
+        print "Using hand mode..."
 
 
     controller = Leap.Controller()  #Get a Leap controller
