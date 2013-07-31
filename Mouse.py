@@ -24,9 +24,7 @@ class absolute_cursor(object):
         if self.y < 0.0:
             self.y = 0.0
         if self.left_button_pressed:  #We are dragging
-            # Once our old code is merged into PyUserInput,
-            # swap this for the official drag API method.
-            mouse.move(self.x, self.y)
+            mouse.drag(self.x, self.y)
         else:  #We are not dragging
             mouse.move(self.x, self.y)
 
@@ -104,8 +102,6 @@ class relative_cursor(absolute_cursor):
         if self.y < 0.0:
             self.y = 0.0
         if self.left_button_pressed:  #We are dragging
-            # Once our old code is merged into PyUserInput,
-            # swap this for the official drag API method.
-            mouse.move(self.x, self.y)
+            mouse.drag(self.x, self.y)
         else:  #We are not dragging
             mouse.move(self.x, self.y)
