@@ -51,4 +51,3 @@ By default, the smooth aggressiveness is 8 frames with a falloff of 1.3.
 ###TODO:  
 Add proper relative mouse movement. Should be pretty easy on Windows, not sure how to do so on OS X.  
 Add multiple monitor support for absolute mouse mode (and OS X's pseudo-relative mode).  
-Use PyUserInput for all mouse input? Or use Xlib directly for Linux?
