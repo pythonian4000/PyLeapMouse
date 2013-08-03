@@ -71,7 +71,7 @@ class Hand_Control_Listener(Leap.Listener):  #The Listener that we attach to the
 
     def do_mouse_stuff(self, hand):  #Take a hand and use it as a mouse
          print hand.palm_position.x, hand.palm_position.y
-         x_coord = 10.0 * hand.palm_position.x + (self.screen_resolution[0] / 2)
+         x_coord = 15.0 * (hand.palm_position.x - 100) + (self.screen_resolution[0] / 2)
          y_coord = self.screen_resolution[1] - 10.0 * (hand.palm_position.y - 100)
          x_coord,y_coord = self.mouse_position_smoother.update((x_coord,y_coord)) #Smooth movement
          self.cursor.move(x_coord,y_coord)  #Move the cursor
