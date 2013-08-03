@@ -65,20 +65,7 @@ class absolute_cursor(object):
         mouse.click(posx, posy, button=2)
 
     def scroll(self, x_movement, y_movement):
-        posx = self.x
-        posy = self.y
-        up = False
-        if y_movement < 0:
-            up = True
-        # Once our old code is merged into PyUserInput,
-        # swap this for the official scroll API method.
-        # In the meantime, when PyUserInput > 0.1.5 is
-        # released, the following will work for Linux:
-        #mouse.scroll(posx, posy, up)
-        if up is True:
-            mouse.click(posx, posy, button=4)
-        elif up is False:
-            mouse.click(posx, posy, button=5)
+        mouse.scroll(vertical=y_movement, horizontal=x_movement)
 
 
 #Allows for relative movement instead of absolute movement. This implementation is not a "true" relative mouse,
